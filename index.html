@@ -2739,5 +2739,38 @@ function backToSignup() {
 // Start the app
 window.addEventListener('DOMContentLoaded', init);
 </script>
+
+<!-- CHAT POPUP -->
+<div class="chat-popup" id="chat-popup">
+  <div class="chat-header">
+    <div class="chat-header-av">🎧</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">PayFlow Support</div>
+      <div class="chat-header-status"><span class="chat-online-dot"></span> Online · Typically replies instantly</div>
+    </div>
+    <button class="chat-close" onclick="closeChat()">✕</button>
+  </div>
+
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-msg">
+      <div class="msg-av agent">🎧</div>
+      <div class="msg-bubble agent">Hey! 👋 I'm your PayFlow support agent. How can I help you today?</div>
+    </div>
+  </div>
+
+  <div id="quick-replies" style="padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--border);">
+    <button onclick="sendQuick('Payment Issue')"    style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">💳 Payment Issue</button>
+    <button onclick="sendQuick('Account Frozen')"   style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">🔒 Account Frozen</button>
+    <button onclick="sendQuick('Transaction Failed')" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">❌ Transaction Failed</button>
+    <button onclick="sendQuick('Talk to an Agent')" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;">🧑‍💼 Talk to an Agent</button>
+  </div>
+
+  <div class="chat-input-row">
+    <input class="chat-input" id="chat-input" type="text" placeholder="Type a message…"
+      onkeydown="if(event.key==='Enter') sendChat()">
+    <button class="chat-send" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
 </body>
 </html>
