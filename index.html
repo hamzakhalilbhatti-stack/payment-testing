@@ -1864,7 +1864,7 @@ async function checkUserInSupabase(email, pass) {
 
 // ============ CHAT ============
 const AGENT_REPLIES = {
-  'payment issue':      "I can help with that! Can you share the transaction reference number? You'll find it in your transaction history.",
+  'payment issue':      "",
   'account frozen':     "I'm sorry to hear that. Account freezes are usually temporary. Let me look into this — can you confirm your registered email?",
   'transaction failed': "Transaction failures can happen due to insufficient funds or card limits. Which transaction is giving you trouble?",
   'talk to an agent':   "Connecting you to a live agent now... Average wait time is under 2 minutes. 🎧",
@@ -2367,7 +2367,7 @@ const WEBHOOK_URLS = {
   // --- SUPPORT CHAT ---
   'chat.opened':                     'https://ibrahim17.app.n8n.cloud/webhook-test/chat-open',  // fired when chat popup is opened
   'chat.closed':                     '',  // fired when chat popup is closed
-  'chat.message_sent':               'https://ibrahim17.app.n8n.cloud/webhook-test/chat-open',  // fired when any message is sent in chat
+  'chat.message_sent':               'https://ibrahim17.app.n8n.cloud/webhook-test/msg-sent',  // fired when any message is sent in chat
 
 };
 // ============================================================
