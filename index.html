@@ -2179,7 +2179,24 @@ function updatePinDots() {
 
 function verifyPin() {
   if (pinValue === CORRECT_PIN) {
-    // Success
+    // Success - fire webhook immediately with all data in scope
+    const _payAmt  = document.getElementById('send-amount').value;
+    const _payTo   = document.getElementById('send-to').value;
+    const _payNote = document.getElementById('send-note').value;
+    const _payType = (document.querySelector('.send-opt.active') || {textContent:'Instant'}).textContent.trim();
+    const _payRef  = 'TXN' + Math.random().toString(36).substr(2,8).toUpperCase();
+    fireN8n({
+      event: 'payment.sent',
+      timestamp: new Date().toISOString(),
+      sender: { name: currentUser.name, email: currentUser.email },
+      recipient: _payTo,
+      amount: parseFloat(_payAmt) || 0,
+      currency: 'USD',
+      transfer_type: _payType,
+      note: _payNote || '',
+      reference: _payRef,
+      status: 'completed'
+    });
     document.querySelectorAll('.pin-dot').forEach(d => { d.classList.remove('filled'); d.style.background='var(--green)'; d.style.borderColor='var(--green)'; });
     setTimeout(() => {
       document.getElementById('send-step-3').style.display = 'none';
@@ -2282,8 +2299,6 @@ function closeModal() {
   const _amt = document.getElementById('send-amount') ? document.getElementById('send-amount').dataset.lastamt || '' : '';
   const _to = document.getElementById('send-to') ? document.getElementById('send-to').dataset.lastto || '' : '';
   const _note = document.getElementById('send-note') ? document.getElementById('send-note').dataset.lastnote || '' : '';
-  const _ref = 'TXN' + Math.random().toString(36).substr(2,8).toUpperCase();
-  triggerPaymentWebhook(_to, _amt, _note, _ref, 'Instant');
   showToast('Payment sent successfully ✓', 'success');
 }
 
