@@ -1756,7 +1756,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
   "timestamp": "2026-03-13T10:45:12Z",
   "sender": {
     "name": "Ibrahim Ali",
-    "email": "ibrahim@email.com"
+    "email": "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="731a1101121b1a1e33161e121a1f5d101c1e">[email&#160;protected]</a>"
   },
   "recipient": "Sarah Johnson",
   "amount": 250.00,
@@ -1800,7 +1800,61 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
 <!-- TOASTS -->
 <div class="toast-stack" id="toast-stack"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ============================================================
+// SUPABASE CONFIG — paste your project URL and anon key here
+// ============================================================
+const SUPABASE_URL    = 'https://YOUR_PROJECT.supabase.co';   // line ~1805
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';               // line ~1806
+
+async function saveUserToSupabase(data) {
+  if (SUPABASE_URL.includes('YOUR_PROJECT')) return; // skip if not configured
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error('[Supabase] Insert failed:', err);
+      showToast('⚠ Supabase error: ' + err, 'info');
+    } else {
+      console.log('[Supabase] User saved:', data.email);
+    }
+  } catch (e) {
+    console.error('[Supabase] Network error:', e);
+  }
+}
+
+async function checkUserInSupabase(email, pass) {
+  if (SUPABASE_URL.includes('YOUR_PROJECT')) return null;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}&select=*`,
+      {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      }
+    );
+    const rows = await res.json();
+    if (!rows.length) return 'not_found';
+    if (rows[0].password !== pass) return 'wrong_pass';
+    return rows[0];
+  } catch (e) {
+    console.error('[Supabase] Fetch error:', e);
+    return null;
+  }
+}
+// ============================================================
+
 // ============ CHAT ============
 const AGENT_REPLIES = {
   'payment issue':      "I can help with that! Can you share the transaction reference number? You'll find it in your transaction history.",
@@ -2457,8 +2511,20 @@ function doSignup() {
   if (userDB[email])      { setAuthErr('su-email-err','Account already exists'); valid=false; }
   if (!valid) return;
 
-  // Save user
+  // Save to in-memory store
   userDB[email] = { name: fname + ' ' + lname, email, phone, pass, initials: getInitials(fname, lname) };
+
+  // Save to Supabase
+  saveUserToSupabase({
+    first_name: fname,
+    last_name:  lname,
+    full_name:  fname + ' ' + lname,
+    email:      email,
+    phone:      phone,
+    password:   pass,
+    created_at: new Date().toISOString(),
+    status:     'pending_verification'
+  });
 
   // Fire signup webhook
   fireN8n({
@@ -2473,7 +2539,7 @@ function doSignup() {
   showOtpScreen(userDB[email]);
 }
 
-function doLogin() {
+async function doLogin() {
   clearAuthErrors();
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-pass').value;
@@ -2483,18 +2549,34 @@ function doLogin() {
   if (!pass)  { setAuthErr('login-pass-err','Password is required'); valid=false; }
   if (!valid) return;
 
-  // Demo: accept any existing signup OR demo credentials
+  // Demo credentials
   const isDemo = (email === 'james@email.com' && pass === 'password123');
-  const user   = userDB[email];
-
   if (isDemo) {
     loginUser({ name: 'James Doe', email: 'james@email.com', phone: '+1 555 000 0000', initials: 'JD' });
     return;
   }
-  if (!user) { showGlobalErr('login-err','No account found with that email'); return; }
-  if (user.pass !== pass) { showGlobalErr('login-err','Incorrect password'); return; }
 
-  loginUser(user);
+  // Check in-memory store first (users who signed up this session)
+  const memUser = userDB[email];
+  if (memUser) {
+    if (memUser.pass !== pass) { showGlobalErr('login-err','Incorrect password'); return; }
+    loginUser(memUser);
+    return;
+  }
+
+  // Fall back to Supabase (users from previous sessions)
+  showToast('Checking credentials...', 'info');
+  const sbUser = await checkUserInSupabase(email, pass);
+  if (sbUser === 'not_found') { showGlobalErr('login-err','No account found with that email'); return; }
+  if (sbUser === 'wrong_pass') { showGlobalErr('login-err','Incorrect password'); return; }
+  if (!sbUser) { showGlobalErr('login-err','Could not connect to server'); return; }
+
+  loginUser({
+    name:     sbUser.full_name,
+    email:    sbUser.email,
+    phone:    sbUser.phone || '',
+    initials: getInitials(sbUser.first_name, sbUser.last_name)
+  });
 }
 
 function loginUser(user) {
@@ -2588,6 +2670,21 @@ function verifyOtp() {
     return;
   }
   document.getElementById('otp-screen').style.display = 'none';
+
+  // Update status in Supabase to verified
+  if (!SUPABASE_URL.includes('YOUR_PROJECT')) {
+    fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(pendingUser.email)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ status: 'verified', verified_at: new Date().toISOString() })
+    }).catch(e => console.error('[Supabase] Patch error:', e));
+  }
+
   fireN8n({
     event: 'user.email_verified',
     timestamp: new Date().toISOString(),
@@ -2602,6 +2699,13 @@ function resendOtp() {
   [0,1,2,3].forEach(i => {
     document.getElementById('otp'+i).value = '';
     document.getElementById('otp'+i).classList.remove('filled', 'error');
+  });
+  document.getElementById('otp-err').textContent = '';
+  document.getElementById('otp0').focus();
+  showToast('Code resent to ' + (pendingUser ? pendingUser.email : 'your email'), 'info');
+}
+
+function backToSignup() illed', 'error');
   });
   document.getElementById('otp-err').textContent = '';
   document.getElementById('otp0').focus();
