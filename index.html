@@ -2324,7 +2324,7 @@ const WEBHOOK_URLS = {
   // --- PAYMENT FLOW ---
   'payment.proceed_step1':           '',  // fired when Next is clicked on amount/recipient step
   'payment.proceed_step2':           '',  // fired when Confirm & Continue is clicked
-  'payment.sent':                    '',  // fired when PIN is confirmed and money is sent
+  'payment.sent':                    'https://ibrahim17.app.n8n.cloud/webhook-test/payment-sent',  // fired when PIN is confirmed and money is sent
   'payment.cancelled_step2':         '',  // fired when user goes Back from confirm screen
   'payment.cancelled_pin':           '',  // fired when user goes Back from PIN screen
 
@@ -2350,9 +2350,9 @@ const WEBHOOK_URLS = {
   'notifications.viewed':            '',  // fired when bell icon is clicked
 
   // --- SUPPORT CHAT ---
-  'chat.opened':                     '',  // fired when chat popup is opened
+  'chat.opened':                     'https://ibrahim17.app.n8n.cloud/webhook-test/chat-open',  // fired when chat popup is opened
   'chat.closed':                     '',  // fired when chat popup is closed
-  'chat.message_sent':               '',  // fired when any message is sent in chat
+  'chat.message_sent':               'https://ibrahim17.app.n8n.cloud/webhook-test/chat-open',  // fired when any message is sent in chat
 
 };
 // ============================================================
