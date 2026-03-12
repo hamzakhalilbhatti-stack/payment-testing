@@ -957,7 +957,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
       <span style="color:var(--muted)">🔍</span>
       <input placeholder="Search transactions...">
     </div>
-    <div class="notif-btn" onclick="showToast('You have 3 new notifications','info')">🔔<div class="notif-dot"></div></div>
+    <div class="notif-btn" onclick="fireN8n({event:'notifications.viewed',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'}});showToast('You have 3 new notifications','info')">🔔<div class="notif-dot"></div></div>
     <div class="avatar" style="width:38px;height:38px;cursor:pointer;font-size:14px">JD</div>
   </div>
 
@@ -973,8 +973,8 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
             <div class="balance-change">▲ +$248.00 (2.03%) this month</div>
             <div class="balance-actions">
               <button class="hero-btn primary" onclick="go('send', document.querySelectorAll('.nav-btn')[1])">↑ Send</button>
-              <button class="hero-btn ghost" onclick="showToast('Add money initiated','info')">+ Add Money</button>
-              <button class="hero-btn ghost" onclick="showToast('Request sent','info')">⇄ Request</button>
+              <button class="hero-btn ghost" onclick="fireN8n({event:'add_money.clicked',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'}});showToast('Add money initiated','info')">+ Add Money</button>
+              <button class="hero-btn ghost" onclick="fireN8n({event:'request_money.clicked',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'}});showToast('Request sent','info')">⇄ Request</button>
             </div>
           </div>
           <div class="card-visual">
@@ -1460,6 +1460,7 @@ const AGENT_REPLIES = {
 };
 
 function openChat() {
+  fireN8n({event:'chat.opened',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},page:'support_chat'});
   const popup = document.getElementById('chat-popup');
   if (popup) popup.classList.add('open');
   setTimeout(() => {
@@ -1469,11 +1470,13 @@ function openChat() {
 }
 
 function closeChat() {
+  fireN8n({event:'chat.closed',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'}});
   const popup = document.getElementById('chat-popup');
   if (popup) popup.classList.remove('open');
 }
 
 function sendQuick(text) {
+  fireN8n({event:'chat.message_sent',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},message:text,type:'quick_reply'});
   document.getElementById('quick-replies').style.display = 'none';
   appendUserMsg(text);
   showTyping();
@@ -1490,6 +1493,7 @@ function sendChat() {
   const text = input.value.trim();
   if (!text) return;
   input.value = '';
+  fireN8n({event:'chat.message_sent',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},message:text,type:'typed'});
   document.getElementById('quick-replies').style.display = 'none';
   appendUserMsg(text);
   showTyping();
@@ -1629,6 +1633,7 @@ function renderHistory() {
 }
 
 function filterHistory(el, f) {
+  fireN8n({event:'history.filter_changed',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},filter:f});
   histFilter = f;
   document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
@@ -1654,9 +1659,11 @@ function go(panel, navEl) {
 function selectOpt(el) {
   document.querySelectorAll('.send-opt').forEach(o=>o.classList.remove('active'));
   el.classList.add('active');
+  fireN8n({event:'send.transfer_type_changed',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},transfer_type:el.textContent.trim()});
 }
 
 function quickSend(name) {
+  fireN8n({event:'contact.quick_send',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},recipient:name});
   go('send', document.querySelectorAll('.nav-btn')[1]);
   setTimeout(()=>{ document.getElementById('send-to').value = name; },100);
 }
@@ -1690,6 +1697,7 @@ function goToConfirm() {
     document.getElementById('confirm-note-row').style.display = 'none';
   }
 
+  fireN8n({event:'payment.proceed_step1',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},recipient:to,amount:parseFloat(amount),currency:'USD',transfer_type:type});
   document.getElementById('send-step-1').style.display = 'none';
   document.getElementById('send-step-2').style.display = 'block';
   document.getElementById('step2dot').classList.add('active');
@@ -1697,6 +1705,7 @@ function goToConfirm() {
 }
 
 function backToStep1() {
+  fireN8n({event:'payment.cancelled_step2',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},note:'User went back from confirm screen'});
   document.getElementById('send-step-2').style.display = 'none';
   document.getElementById('send-step-1').style.display = 'block';
   document.getElementById('step2dot').classList.remove('active');
@@ -1710,6 +1719,7 @@ const MAX_PIN_ATTEMPTS = 3;
 const CORRECT_PIN = '123456'; // demo PIN
 
 function goToPin() {
+  fireN8n({event:'payment.proceed_step2',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},note:'User confirmed payment details, entering PIN'});
   pinValue = '';
   pinAttempts = 0;
   updatePinDots();
@@ -1724,6 +1734,7 @@ function goToPin() {
 }
 
 function backToConfirm() {
+  fireN8n({event:'payment.cancelled_pin',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},note:'User went back from PIN screen'});
   pinValue = '';
   updatePinDots();
   document.getElementById('send-step-3').style.display = 'none';
@@ -1774,6 +1785,7 @@ function verifyPin() {
     }, 500);
   } else {
     pinAttempts++;
+    fireN8n({event:'pin.wrong_attempt',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},attempt:pinAttempts,remaining:Math.max(0,3-pinAttempts)});
     document.querySelectorAll('.pin-dot').forEach(d => d.classList.add('error'));
     const errEl = document.getElementById('pin-error');
     const remaining = MAX_PIN_ATTEMPTS - pinAttempts;
@@ -1788,6 +1800,7 @@ function verifyPin() {
         k.style.cursor = 'not-allowed';
         k.style.pointerEvents = 'none';
       });
+      fireN8n({event:'pin.locked_out',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},note:'Account locked after 3 failed PIN attempts'});
       setTimeout(() => showVerification(), 900);
     } else {
       errEl.textContent = `Incorrect PIN. ${remaining} attempt${remaining===1?'':'s'} remaining.`;
@@ -1804,6 +1817,7 @@ function showVerification() {
 
 function submitVerification() {
   const email = document.getElementById('verif-email').value.trim();
+  fireN8n({event:'identity.verification_submitted',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:email||'james@email.com'},note:'User submitted identity verification after PIN lockout'});
   const otp   = document.getElementById('verif-otp').value.trim();
   if (!email) { showVerifError('Please enter your registered email.'); return; }
   if (!otp || otp.length < 4) { showVerifError('Please enter the OTP sent to your email.'); return; }
@@ -1862,6 +1876,7 @@ function closeModal() {
 }
 
 function showTxDetail(name, amount, status, date) {
+  fireN8n({event:'transaction.viewed',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},recipient:name,amount:Math.abs(parseFloat(amount)),status,date});
   showToast(`${name} · $${Math.abs(parseFloat(amount)).toFixed(2)} · ${status}`,'info');
   if (status === 'pending' || status === 'failed') {
     triggerFlaggedWebhook({ name, amount, meta: status });
@@ -1888,10 +1903,21 @@ function fireN8n(payload) {
   if (!N8N_WEBHOOK_URL || N8N_WEBHOOK_URL.includes('YOUR-N8N')) return;
   fetch(N8N_WEBHOOK_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    },
     body: JSON.stringify(payload),
-    mode: 'no-cors'
-  }).catch(() => {});
+    mode: 'no-cors'  // n8n requires no-cors for cross-origin browser requests
+  })
+  .then(() => {
+    console.log('[PayFlow→n8n] Webhook fired:', payload.event);
+    if (payload.event === 'payment.sent') showToast('📡 Sent to n8n: ' + payload.event, 'success');
+  })
+  .catch(err => {
+    console.error('[PayFlow→n8n] Webhook error:', err);
+    showToast('⚠ n8n webhook failed: ' + err.message, 'info');
+  });
 }
 
 // TRIGGER 1: Payment Sent (after PIN confirmed)
