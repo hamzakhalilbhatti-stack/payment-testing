@@ -897,10 +897,216 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
 .chat-send { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; color: #fff; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
 .chat-send:hover { background: var(--accent2); transform: scale(1.08); }
 
+
+/* ══════════════════════════════════════
+   AUTH SCREEN (Login / Signup)
+══════════════════════════════════════ */
+#auth-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif;
+}
+.auth-wrap {
+  display: flex; width: 900px; height: 560px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px; overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+}
+
+/* LEFT panel — branding */
+.auth-left {
+  width: 360px; flex-shrink: 0;
+  background: linear-gradient(145deg, #1a1060 0%, #0d1a3a 60%, #0a1628 100%);
+  padding: 48px 40px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  position: relative; overflow: hidden;
+}
+.auth-left::before {
+  content: '';
+  position: absolute; top: -80px; right: -80px;
+  width: 280px; height: 280px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(99,91,255,0.2) 0%, transparent 70%);
+}
+.auth-left::after {
+  content: '';
+  position: absolute; bottom: -60px; left: -40px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%);
+}
+.auth-brand { position: relative; z-index: 1; }
+.auth-logo-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+.auth-logo-box {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 900; color: #fff;
+}
+.auth-logo-name { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+.auth-headline { font-size: 28px; font-weight: 800; color: #fff; line-height: 1.3; letter-spacing: -0.5px; margin-bottom: 14px; }
+.auth-sub { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+.auth-features { position: relative; z-index: 1; }
+.auth-feat-item { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.auth-feat-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0;
+}
+.auth-feat-text { font-size: 12px; color: rgba(255,255,255,0.65); font-weight: 500; }
+
+/* RIGHT panel — form */
+.auth-right {
+  flex: 1; padding: 48px 44px;
+  display: flex; flex-direction: column; justify-content: center;
+  overflow-y: auto;
+}
+.auth-tab-row { display: flex; gap: 0; margin-bottom: 32px; background: var(--surface2); border-radius: 10px; padding: 4px; }
+.auth-tab {
+  flex: 1; padding: 9px; text-align: center;
+  border-radius: 8px; border: none; background: none;
+  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--muted); cursor: pointer; transition: all 0.2s;
+}
+.auth-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.auth-form { display: none; }
+.auth-form.active { display: block; }
+.auth-form-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
+.auth-form-sub { font-size: 13px; color: var(--muted2); margin-bottom: 24px; }
+.auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.auth-group { margin-bottom: 14px; }
+.auth-label { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; display: block; }
+.auth-input {
+  width: 100%; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 11px 14px; color: var(--text);
+  font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+  transition: border-color 0.2s;
+}
+.auth-input:focus { border-color: var(--accent); }
+.auth-input::placeholder { color: var(--muted); }
+.auth-input.error { border-color: var(--red); }
+.auth-err { font-size: 11px; color: var(--red); font-weight: 600; margin-top: 4px; min-height: 14px; }
+.auth-submit {
+  width: 100%; padding: 13px; border-radius: 11px; border: none;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  color: #fff; font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; margin-top: 6px; letter-spacing: 0.2px;
+}
+.auth-submit:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(99,91,255,0.35); }
+.auth-submit:active { transform: translateY(0); }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.auth-divider span { font-size: 11px; color: var(--muted); font-weight: 600; }
+.auth-terms { font-size: 11px; color: var(--muted); text-align: center; margin-top: 14px; line-height: 1.5; }
+.auth-terms a { color: var(--accent); text-decoration: none; }
+.auth-global-err {
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
+  font-size: 12px; color: var(--red); font-weight: 600; display: none;
+}
+
 </style>
 </head>
 <body>
-<div class="app">
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-wrap">
+
+    <!-- LEFT branding -->
+    <div class="auth-left">
+      <div class="auth-brand">
+        <div class="auth-logo-wrap">
+          <div class="auth-logo-box">P</div>
+          <div class="auth-logo-name">PayFlow</div>
+        </div>
+        <div class="auth-headline">Send money<br>at the speed<br>of trust.</div>
+        <div class="auth-sub">Instant transfers, bulletproof security, and full control over your finances.</div>
+      </div>
+      <div class="auth-features">
+        <div class="auth-feat-item"><div class="auth-feat-icon">⚡</div><div class="auth-feat-text">Instant transfers worldwide</div></div>
+        <div class="auth-feat-item"><div class="auth-feat-icon">🔐</div><div class="auth-feat-text">6-digit PIN + identity verification</div></div>
+        <div class="auth-feat-item"><div class="auth-feat-icon">📡</div><div class="auth-feat-text">Real-time n8n automation</div></div>
+        <div class="auth-feat-item"><div class="auth-feat-icon">💳</div><div class="auth-feat-text">Multi-wallet support</div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT form -->
+    <div class="auth-right">
+      <div class="auth-tab-row">
+        <button class="auth-tab active" onclick="switchAuthTab('login',this)">Sign In</button>
+        <button class="auth-tab" onclick="switchAuthTab('signup',this)">Create Account</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="auth-form active" id="auth-login">
+        <div class="auth-form-title">Welcome back 👋</div>
+        <div class="auth-form-sub">Sign in to your PayFlow account</div>
+        <div class="auth-global-err" id="login-err"></div>
+        <div class="auth-group">
+          <label class="auth-label">Email Address</label>
+          <input class="auth-input" id="login-email" type="email" placeholder="you@email.com">
+          <div class="auth-err" id="login-email-err"></div>
+        </div>
+        <div class="auth-group">
+          <label class="auth-label">Password</label>
+          <input class="auth-input" id="login-pass" type="password" placeholder="Enter your password">
+          <div class="auth-err" id="login-pass-err"></div>
+        </div>
+        <button class="auth-submit" onclick="doLogin()">Sign In →</button>
+        <div class="auth-terms">Don't have an account? <a onclick="switchAuthTab('signup',document.querySelectorAll('.auth-tab')[1])" style="cursor:pointer">Create one free</a></div>
+      </div>
+
+      <!-- SIGNUP -->
+      <div class="auth-form" id="auth-signup">
+        <div class="auth-form-title">Create account</div>
+        <div class="auth-form-sub">Join PayFlow — it's free</div>
+        <div class="auth-global-err" id="signup-err"></div>
+        <div class="auth-row">
+          <div class="auth-group">
+            <label class="auth-label">First Name</label>
+            <input class="auth-input" id="su-fname" type="text" placeholder="John">
+            <div class="auth-err" id="su-fname-err"></div>
+          </div>
+          <div class="auth-group">
+            <label class="auth-label">Last Name</label>
+            <input class="auth-input" id="su-lname" type="text" placeholder="Doe">
+            <div class="auth-err" id="su-lname-err"></div>
+          </div>
+        </div>
+        <div class="auth-group">
+          <label class="auth-label">Email Address</label>
+          <input class="auth-input" id="su-email" type="email" placeholder="you@email.com">
+          <div class="auth-err" id="su-email-err"></div>
+        </div>
+        <div class="auth-group">
+          <label class="auth-label">Phone Number</label>
+          <input class="auth-input" id="su-phone" type="tel" placeholder="+1 555 000 0000">
+          <div class="auth-err" id="su-phone-err"></div>
+        </div>
+        <div class="auth-row">
+          <div class="auth-group">
+            <label class="auth-label">Password</label>
+            <input class="auth-input" id="su-pass" type="password" placeholder="Min 8 characters">
+            <div class="auth-err" id="su-pass-err"></div>
+          </div>
+          <div class="auth-group">
+            <label class="auth-label">Confirm Password</label>
+            <input class="auth-input" id="su-pass2" type="password" placeholder="Repeat password">
+            <div class="auth-err" id="su-pass2-err"></div>
+          </div>
+        </div>
+        <button class="auth-submit" onclick="doSignup()">Create Account →</button>
+        <div class="auth-terms">By signing up you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="app" id="main-app" style="display:none">
 
 <!-- SIDEBAR -->
 <div class="sidebar">
@@ -940,9 +1146,9 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
   </div>
 
   <div class="profile-card">
-    <div class="avatar">JD</div>
+    <div class="avatar" id="sidebar-avatar">JD</div>
     <div>
-      <div class="profile-name">James Doe</div>
+      <div class="profile-name" id="profile-name-display">James Doe</div>
       <div class="profile-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="016b606c647241646c60686d2f626e6c">[email&#160;protected]</a></div>
     </div>
     <div class="profile-dot"></div>
@@ -957,8 +1163,8 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
       <span style="color:var(--muted)">🔍</span>
       <input placeholder="Search transactions...">
     </div>
-    <div class="notif-btn" onclick="fireN8n({event:'notifications.viewed',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'}});showToast('You have 3 new notifications','info')">🔔<div class="notif-dot"></div></div>
-    <div class="avatar" style="width:38px;height:38px;cursor:pointer;font-size:14px">JD</div>
+    <div class="notif-btn" onclick="fireN8n({event:'notifications.viewed',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email}});showToast('You have 3 new notifications','info')">🔔<div class="notif-dot"></div></div>
+    <div class="avatar" style="width:38px;height:38px;cursor:pointer;font-size:14px" id="topbar-avatar">JD</div>
   </div>
 
   <div class="content">
@@ -973,14 +1179,14 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
             <div class="balance-change">▲ +$248.00 (2.03%) this month</div>
             <div class="balance-actions">
               <button class="hero-btn primary" onclick="go('send', document.querySelectorAll('.nav-btn')[1])">↑ Send</button>
-              <button class="hero-btn ghost" onclick="fireN8n({event:'add_money.clicked',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'}});showToast('Add money initiated','info')">+ Add Money</button>
-              <button class="hero-btn ghost" onclick="fireN8n({event:'request_money.clicked',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'}});showToast('Request sent','info')">⇄ Request</button>
+              <button class="hero-btn ghost" onclick="fireN8n({event:'add_money.clicked',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email}});showToast('Add money initiated','info')">+ Add Money</button>
+              <button class="hero-btn ghost" onclick="fireN8n({event:'request_money.clicked',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email}});showToast('Request sent','info')">⇄ Request</button>
             </div>
           </div>
           <div class="card-visual">
             <div class="card-type">VISA DEBIT</div>
             <div class="card-num">•••• •••• •••• 4821</div>
-            <div class="card-name">JAMES DOE</div>
+            <div class="card-name" id="card-name-display">JAMES DOE</div>
           </div>
         </div>
       </div>
@@ -1065,7 +1271,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
               <span class="currency-sym">$</span>
               <input class="amount-input" type="number" placeholder="0" id="send-amount" min="0">
             </div>
-            <div class="amount-sublabel">Available: <b style="color:var(--green)">$12,480.50</b></div>
+            <div class="amount-sublabel">Available: <b style="color:var(--green)" id="avail-balance">$12,480.50</b></div>
           </div>
 
           <div class="send-options">
@@ -1197,7 +1403,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
               <div class="verif-form">
                 <div class="verif-group">
                   <div class="verif-label">REGISTERED EMAIL</div>
-                  <input class="verif-input" id="verif-email" type="email" placeholder="james@email.com">
+                  <input class="verif-input" id="verif-email" type="email" id="verif-email" placeholder="Enter your registered email">
                 </div>
                 <div class="verif-group">
                   <div class="verif-label">OTP CODE</div>
@@ -1460,7 +1666,7 @@ const AGENT_REPLIES = {
 };
 
 function openChat() {
-  fireN8n({event:'chat.opened',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},page:'support_chat'});
+  fireN8n({event:'chat.opened',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},page:'support_chat'});
   const popup = document.getElementById('chat-popup');
   if (popup) popup.classList.add('open');
   setTimeout(() => {
@@ -1470,13 +1676,13 @@ function openChat() {
 }
 
 function closeChat() {
-  fireN8n({event:'chat.closed',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'}});
+  fireN8n({event:'chat.closed',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email}});
   const popup = document.getElementById('chat-popup');
   if (popup) popup.classList.remove('open');
 }
 
 function sendQuick(text) {
-  fireN8n({event:'chat.message_sent',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},message:text,type:'quick_reply'});
+  fireN8n({event:'chat.message_sent',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},message:text,type:'quick_reply'});
   document.getElementById('quick-replies').style.display = 'none';
   appendUserMsg(text);
   showTyping();
@@ -1493,7 +1699,7 @@ function sendChat() {
   const text = input.value.trim();
   if (!text) return;
   input.value = '';
-  fireN8n({event:'chat.message_sent',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},message:text,type:'typed'});
+  fireN8n({event:'chat.message_sent',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},message:text,type:'typed'});
   document.getElementById('quick-replies').style.display = 'none';
   appendUserMsg(text);
   showTyping();
@@ -1633,7 +1839,7 @@ function renderHistory() {
 }
 
 function filterHistory(el, f) {
-  fireN8n({event:'history.filter_changed',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},filter:f});
+  fireN8n({event:'history.filter_changed',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},filter:f});
   histFilter = f;
   document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
@@ -1659,11 +1865,11 @@ function go(panel, navEl) {
 function selectOpt(el) {
   document.querySelectorAll('.send-opt').forEach(o=>o.classList.remove('active'));
   el.classList.add('active');
-  fireN8n({event:'send.transfer_type_changed',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},transfer_type:el.textContent.trim()});
+  fireN8n({event:'send.transfer_type_changed',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},transfer_type:el.textContent.trim()});
 }
 
 function quickSend(name) {
-  fireN8n({event:'contact.quick_send',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},recipient:name});
+  fireN8n({event:'contact.quick_send',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},recipient:name});
   go('send', document.querySelectorAll('.nav-btn')[1]);
   setTimeout(()=>{ document.getElementById('send-to').value = name; },100);
 }
@@ -1697,7 +1903,7 @@ function goToConfirm() {
     document.getElementById('confirm-note-row').style.display = 'none';
   }
 
-  fireN8n({event:'payment.proceed_step1',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},recipient:to,amount:parseFloat(amount),currency:'USD',transfer_type:type});
+  fireN8n({event:'payment.proceed_step1',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},recipient:to,amount:parseFloat(amount),currency:'USD',transfer_type:type});
   document.getElementById('send-step-1').style.display = 'none';
   document.getElementById('send-step-2').style.display = 'block';
   document.getElementById('step2dot').classList.add('active');
@@ -1705,7 +1911,7 @@ function goToConfirm() {
 }
 
 function backToStep1() {
-  fireN8n({event:'payment.cancelled_step2',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},note:'User went back from confirm screen'});
+  fireN8n({event:'payment.cancelled_step2',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},note:'User went back from confirm screen'});
   document.getElementById('send-step-2').style.display = 'none';
   document.getElementById('send-step-1').style.display = 'block';
   document.getElementById('step2dot').classList.remove('active');
@@ -1719,7 +1925,7 @@ const MAX_PIN_ATTEMPTS = 3;
 const CORRECT_PIN = '123456'; // demo PIN
 
 function goToPin() {
-  fireN8n({event:'payment.proceed_step2',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},note:'User confirmed payment details, entering PIN'});
+  fireN8n({event:'payment.proceed_step2',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},note:'User confirmed payment details, entering PIN'});
   pinValue = '';
   pinAttempts = 0;
   updatePinDots();
@@ -1734,7 +1940,7 @@ function goToPin() {
 }
 
 function backToConfirm() {
-  fireN8n({event:'payment.cancelled_pin',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},note:'User went back from PIN screen'});
+  fireN8n({event:'payment.cancelled_pin',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},note:'User went back from PIN screen'});
   pinValue = '';
   updatePinDots();
   document.getElementById('send-step-3').style.display = 'none';
@@ -1785,7 +1991,7 @@ function verifyPin() {
     }, 500);
   } else {
     pinAttempts++;
-    fireN8n({event:'pin.wrong_attempt',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},attempt:pinAttempts,remaining:Math.max(0,3-pinAttempts)});
+    fireN8n({event:'pin.wrong_attempt',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},attempt:pinAttempts,remaining:Math.max(0,3-pinAttempts)});
     document.querySelectorAll('.pin-dot').forEach(d => d.classList.add('error'));
     const errEl = document.getElementById('pin-error');
     const remaining = MAX_PIN_ATTEMPTS - pinAttempts;
@@ -1800,7 +2006,7 @@ function verifyPin() {
         k.style.cursor = 'not-allowed';
         k.style.pointerEvents = 'none';
       });
-      fireN8n({event:'pin.locked_out',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},note:'Account locked after 3 failed PIN attempts'});
+      fireN8n({event:'pin.locked_out',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},note:'Account locked after 3 failed PIN attempts'});
       setTimeout(() => showVerification(), 900);
     } else {
       errEl.textContent = `Incorrect PIN. ${remaining} attempt${remaining===1?'':'s'} remaining.`;
@@ -1817,7 +2023,7 @@ function showVerification() {
 
 function submitVerification() {
   const email = document.getElementById('verif-email').value.trim();
-  fireN8n({event:'identity.verification_submitted',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:email||'james@email.com'},note:'User submitted identity verification after PIN lockout'});
+  fireN8n({event:'identity.verification_submitted',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:email||currentUser.email},note:'User submitted identity verification after PIN lockout'});
   const otp   = document.getElementById('verif-otp').value.trim();
   if (!email) { showVerifError('Please enter your registered email.'); return; }
   if (!otp || otp.length < 4) { showVerifError('Please enter the OTP sent to your email.'); return; }
@@ -1876,7 +2082,7 @@ function closeModal() {
 }
 
 function showTxDetail(name, amount, status, date) {
-  fireN8n({event:'transaction.viewed',timestamp:new Date().toISOString(),sender:{name:'James Doe',email:'james@email.com'},recipient:name,amount:Math.abs(parseFloat(amount)),status,date});
+  fireN8n({event:'transaction.viewed',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},recipient:name,amount:Math.abs(parseFloat(amount)),status,date});
   showToast(`${name} · $${Math.abs(parseFloat(amount)).toFixed(2)} · ${status}`,'info');
   if (status === 'pending' || status === 'failed') {
     triggerFlaggedWebhook({ name, amount, meta: status });
@@ -1925,7 +2131,7 @@ function triggerPaymentWebhook(to, amount, note, ref, type) {
   fireN8n({
     event: 'payment.sent',
     timestamp: new Date().toISOString(),
-    sender: { name: 'James Doe', email: 'james@email.com' },
+    sender: { name: currentUser.name, email: currentUser.email },
     recipient: to,
     amount: parseFloat(amount) || 0,
     currency: 'USD',
@@ -1941,7 +2147,7 @@ function triggerFlaggedWebhook(tx) {
   fireN8n({
     event: 'transaction.flagged',
     timestamp: new Date().toISOString(),
-    sender: { name: 'James Doe', email: 'james@email.com' },
+    sender: { name: currentUser.name, email: currentUser.email },
     recipient: tx.name || 'Unknown',
     amount: Math.abs(tx.amount),
     currency: 'USD',
@@ -1967,6 +2173,138 @@ function clearLog() {
   const log = document.getElementById('wh-log');
   if (log) log.innerHTML = '';
 }
+
+// ══════════════════════════════════════
+// AUTH SYSTEM
+// ══════════════════════════════════════
+
+// In-memory user store (persists in session)
+const userDB = {};
+
+// Current logged-in user — all webhooks use this
+let currentUser = { name: 'James Doe', email: 'james@email.com', phone: '', initials: 'JD' };
+
+function getInitials(first, last) {
+  return ((first[0]||'') + (last[0]||'')).toUpperCase();
+}
+
+function switchAuthTab(tab, el) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else document.querySelectorAll('.auth-tab')[tab==='login'?0:1].classList.add('active');
+  document.getElementById('auth-' + tab).classList.add('active');
+}
+
+function clearAuthErrors() {
+  document.querySelectorAll('.auth-err').forEach(e => e.textContent = '');
+  document.querySelectorAll('.auth-input').forEach(i => i.classList.remove('error'));
+  document.querySelectorAll('.auth-global-err').forEach(e => { e.textContent=''; e.style.display='none'; });
+}
+
+function setAuthErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = msg; }
+  const inp = document.getElementById(id.replace('-err',''));
+  if (inp) inp.classList.add('error');
+}
+
+function showGlobalErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
+}
+
+function doSignup() {
+  clearAuthErrors();
+  const fname  = document.getElementById('su-fname').value.trim();
+  const lname  = document.getElementById('su-lname').value.trim();
+  const email  = document.getElementById('su-email').value.trim();
+  const phone  = document.getElementById('su-phone').value.trim();
+  const pass   = document.getElementById('su-pass').value;
+  const pass2  = document.getElementById('su-pass2').value;
+
+  let valid = true;
+  if (!fname)              { setAuthErr('su-fname-err','First name is required'); valid=false; }
+  if (!lname)              { setAuthErr('su-lname-err','Last name is required'); valid=false; }
+  if (!email || !email.includes('@')) { setAuthErr('su-email-err','Enter a valid email'); valid=false; }
+  if (!phone)              { setAuthErr('su-phone-err','Phone number is required'); valid=false; }
+  if (pass.length < 8)    { setAuthErr('su-pass-err','Min 8 characters'); valid=false; }
+  if (pass !== pass2)     { setAuthErr('su-pass2-err','Passwords do not match'); valid=false; }
+  if (userDB[email])      { setAuthErr('su-email-err','Account already exists'); valid=false; }
+  if (!valid) return;
+
+  // Save user
+  userDB[email] = { name: fname + ' ' + lname, email, phone, pass, initials: getInitials(fname, lname) };
+
+  // Fire signup webhook
+  fireN8n({
+    event: 'user.signup',
+    timestamp: new Date().toISOString(),
+    sender: { name: fname + ' ' + lname, email },
+    phone,
+    status: 'new_account'
+  });
+
+  // Auto login
+  loginUser(userDB[email]);
+  showToast('Account created! Welcome to PayFlow 🎉', 'success');
+}
+
+function doLogin() {
+  clearAuthErrors();
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+
+  let valid = true;
+  if (!email || !email.includes('@')) { setAuthErr('login-email-err','Enter a valid email'); valid=false; }
+  if (!pass)  { setAuthErr('login-pass-err','Password is required'); valid=false; }
+  if (!valid) return;
+
+  // Demo: accept any existing signup OR demo credentials
+  const isDemo = (email === 'james@email.com' && pass === 'password123');
+  const user   = userDB[email];
+
+  if (isDemo) {
+    loginUser({ name: 'James Doe', email: 'james@email.com', phone: '+1 555 000 0000', initials: 'JD' });
+    return;
+  }
+  if (!user) { showGlobalErr('login-err','No account found with that email'); return; }
+  if (user.pass !== pass) { showGlobalErr('login-err','Incorrect password'); return; }
+
+  loginUser(user);
+}
+
+function loginUser(user) {
+  currentUser = { name: user.name, email: user.email, phone: user.phone||'', initials: user.initials || getInitials(user.name.split(' ')[0], user.name.split(' ')[1]||'') };
+
+  // Fire login webhook with user email
+  fireN8n({
+    event: 'user.login',
+    timestamp: new Date().toISOString(),
+    sender: { name: currentUser.name, email: currentUser.email },
+    phone: currentUser.phone,
+    status: 'authenticated'
+  });
+
+  // Update all UI with real user info
+  const el_name    = document.getElementById('profile-name-display');
+  const el_email   = document.getElementById('profile-email-display');
+  const el_sav     = document.getElementById('sidebar-avatar');
+  const el_tav     = document.getElementById('topbar-avatar');
+  const el_cname   = document.getElementById('card-name-display');
+  if (el_name)  el_name.textContent  = currentUser.name;
+  if (el_email) el_email.textContent = currentUser.email;
+  if (el_sav)   el_sav.textContent   = currentUser.initials;
+  if (el_tav)   el_tav.textContent   = currentUser.initials;
+  if (el_cname) el_cname.textContent = currentUser.name.toUpperCase();
+
+  // Hide auth, show app
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-app').style.display    = 'flex';
+  showToast('Welcome back, ' + currentUser.name.split(' ')[0] + '! 👋', 'success');
+}
+
+
 </script>
 </body>
 </html>
