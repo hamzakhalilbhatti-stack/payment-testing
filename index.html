@@ -1616,283 +1616,148 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
       </div>
     </div>
 
-        <div style="font-size:13px;color:var(--muted2)">Each trigger fires to its own dedicated webhook URL — configure them individually below.</div>
+        <div style="font-size:13px;color:var(--muted2)">All webhook URLs are set directly in the HTML file. See the <code style="background:var(--surface3);padding:2px 6px;border-radius:4px;font-size:11px">WEBHOOK_URLS</code> object at the top of the &lt;script&gt; block.</div>
       </div>
 
       <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:24px">
 
-        <!-- LEFT: per-event list -->
+        <!-- LEFT: event reference table -->
         <div>
 
-          <!-- AUTH -->
           <div class="wh-section">
             <div class="wh-section-title">&#128272; Auth Events</div>
-            <div class="trigger-list" style="gap:10px;display:flex;flex-direction:column">
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#128221;</span>
-                  <div style="flex:1"><div class="trigger-name">user.signup</div><div class="trigger-desc">New account created (name, email, phone)</div></div>
-                  <div id="dot-user_signup" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-user_signup" placeholder="https://your-n8n.com/webhook/signup" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('user.signup')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('user.signup')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+            <div class="trigger-list" style="display:flex;flex-direction:column;gap:6px">
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">user.signup</div><div class="trigger-desc">Create Account submitted &rarr; fires with name, email, phone</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('user.signup')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#128273;</span>
-                  <div style="flex:1"><div class="trigger-name">user.login</div><div class="trigger-desc">Fires on every successful sign-in</div></div>
-                  <div id="dot-user_login" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-user_login" placeholder="https://your-n8n.com/webhook/login" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('user.login')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('user.login')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">user.login</div><div class="trigger-desc">Every successful sign-in &rarr; fires with name, email</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('user.login')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#9989;</span>
-                  <div style="flex:1"><div class="trigger-name">user.email_verified</div><div class="trigger-desc">OTP confirmed after sign-up</div></div>
-                  <div id="dot-user_email_verified" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-user_email_verified" placeholder="https://your-n8n.com/webhook/email-verified" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('user.email_verified')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('user.email_verified')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">user.email_verified</div><div class="trigger-desc">OTP code confirmed after sign-up</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('user.email_verified')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
             </div>
           </div>
 
-          <!-- PAYMENTS -->
           <div class="wh-section">
             <div class="wh-section-title">&#128184; Payment Events</div>
-            <div class="trigger-list" style="gap:10px;display:flex;flex-direction:column">
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#128184;</span>
-                  <div style="flex:1"><div class="trigger-name">payment.sent</div><div class="trigger-desc">PIN confirmed &mdash; payment fully processed</div></div>
-                  <div id="dot-payment_sent" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-payment_sent" placeholder="https://your-n8n.com/webhook/payment-sent" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('payment.sent')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('payment.sent')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+            <div class="trigger-list" style="display:flex;flex-direction:column;gap:6px">
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">payment.proceed_step1</div><div class="trigger-desc">Next clicked on amount/recipient step</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('payment.proceed_step1')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">1&#65039;&#8419;</span>
-                  <div style="flex:1"><div class="trigger-name">payment.proceed_step1</div><div class="trigger-desc">User clicked Next on amount/recipient step</div></div>
-                  <div id="dot-payment_proceed_step1" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-payment_proceed_step1" placeholder="https://your-n8n.com/webhook/step1" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('payment.proceed_step1')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('payment.proceed_step1')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">payment.proceed_step2</div><div class="trigger-desc">Confirm &amp; Continue clicked (entering PIN)</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('payment.proceed_step2')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">2&#65039;&#8419;</span>
-                  <div style="flex:1"><div class="trigger-name">payment.proceed_step2</div><div class="trigger-desc">User confirmed details, proceeding to PIN</div></div>
-                  <div id="dot-payment_proceed_step2" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-payment_proceed_step2" placeholder="https://your-n8n.com/webhook/step2" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('payment.proceed_step2')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('payment.proceed_step2')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">payment.sent</div><div class="trigger-desc">PIN confirmed &mdash; payment fully processed &rarr; fires with recipient, amount, reference</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('payment.sent')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#8617;&#65039;</span>
-                  <div style="flex:1"><div class="trigger-name">payment.cancelled_step2</div><div class="trigger-desc">User went back from confirm screen</div></div>
-                  <div id="dot-payment_cancelled_step2" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-payment_cancelled_step2" placeholder="https://your-n8n.com/webhook/cancelled-step2" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('payment.cancelled_step2')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('payment.cancelled_step2')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">payment.cancelled_step2</div><div class="trigger-desc">User went Back from confirm screen</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('payment.cancelled_step2')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#128683;</span>
-                  <div style="flex:1"><div class="trigger-name">payment.cancelled_pin</div><div class="trigger-desc">User went back from PIN screen</div></div>
-                  <div id="dot-payment_cancelled_pin" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-payment_cancelled_pin" placeholder="https://your-n8n.com/webhook/cancelled-pin" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('payment.cancelled_pin')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('payment.cancelled_pin')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">payment.cancelled_pin</div><div class="trigger-desc">User went Back from PIN screen</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('payment.cancelled_pin')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
             </div>
           </div>
 
-          <!-- SECURITY -->
           <div class="wh-section">
             <div class="wh-section-title">&#128737; Security Events</div>
-            <div class="trigger-list" style="gap:10px;display:flex;flex-direction:column">
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#9888;&#65039;</span>
-                  <div style="flex:1"><div class="trigger-name">pin.wrong_attempt</div><div class="trigger-desc">Wrong PIN entered (includes attempt count &amp; remaining)</div></div>
-                  <div id="dot-pin_wrong_attempt" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-pin_wrong_attempt" placeholder="https://your-n8n.com/webhook/pin-wrong" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('pin.wrong_attempt')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('pin.wrong_attempt')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+            <div class="trigger-list" style="display:flex;flex-direction:column;gap:6px">
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">pin.wrong_attempt</div><div class="trigger-desc">Wrong PIN entered &rarr; fires with attempt count &amp; remaining</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('pin.wrong_attempt')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#128274;</span>
-                  <div style="flex:1"><div class="trigger-name">pin.locked_out</div><div class="trigger-desc">Account locked after 3 failed PIN attempts</div></div>
-                  <div id="dot-pin_locked_out" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-pin_locked_out" placeholder="https://your-n8n.com/webhook/pin-lockout" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('pin.locked_out')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('pin.locked_out')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">pin.locked_out</div><div class="trigger-desc">Account locked after 3 failed PIN attempts</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('pin.locked_out')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#129370;</span>
-                  <div style="flex:1"><div class="trigger-name">identity.verification_submitted</div><div class="trigger-desc">Identity submitted after PIN lockout</div></div>
-                  <div id="dot-identity_verification_submitted" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-identity_verification_submitted" placeholder="https://your-n8n.com/webhook/identity" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('identity.verification_submitted')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('identity.verification_submitted')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">identity.verification_submitted</div><div class="trigger-desc">Identity form submitted after lockout</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('identity.verification_submitted')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#128681;</span>
-                  <div style="flex:1"><div class="trigger-name">transaction.flagged</div><div class="trigger-desc">Transaction manually flagged for review</div></div>
-                  <div id="dot-transaction_flagged" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-transaction_flagged" placeholder="https://your-n8n.com/webhook/flagged" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('transaction.flagged')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('transaction.flagged')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">transaction.flagged</div><div class="trigger-desc">Flag button clicked on a transaction</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('transaction.flagged')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
             </div>
           </div>
 
-          <!-- ACTIVITY -->
           <div class="wh-section">
             <div class="wh-section-title">&#128202; Activity Events</div>
-            <div class="trigger-list" style="gap:10px;display:flex;flex-direction:column">
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#128065;</span>
-                  <div style="flex:1"><div class="trigger-name">transaction.viewed</div><div class="trigger-desc">User opened a transaction detail</div></div>
-                  <div id="dot-transaction_viewed" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-transaction_viewed" placeholder="https://your-n8n.com/webhook/tx-viewed" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('transaction.viewed')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('transaction.viewed')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+            <div class="trigger-list" style="display:flex;flex-direction:column;gap:6px">
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">transaction.viewed</div><div class="trigger-desc">Transaction row clicked to open details</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('transaction.viewed')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#10133;</span>
-                  <div style="flex:1"><div class="trigger-name">add_money.clicked</div><div class="trigger-desc">User tapped the Add Money button</div></div>
-                  <div id="dot-add_money_clicked" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-add_money_clicked" placeholder="https://your-n8n.com/webhook/add-money" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('add_money.clicked')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('add_money.clicked')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">add_money.clicked</div><div class="trigger-desc">Add Money button tapped on dashboard</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('add_money.clicked')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#8651;</span>
-                  <div style="flex:1"><div class="trigger-name">request_money.clicked</div><div class="trigger-desc">User tapped the Request Money button</div></div>
-                  <div id="dot-request_money_clicked" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-request_money_clicked" placeholder="https://your-n8n.com/webhook/request-money" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('request_money.clicked')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('request_money.clicked')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">request_money.clicked</div><div class="trigger-desc">Request button tapped on dashboard</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('request_money.clicked')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
-              <div class="trigger-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-size:17px">&#128172;</span>
-                  <div style="flex:1"><div class="trigger-name">chat.message_sent</div><div class="trigger-desc">User sent a support chat message</div></div>
-                  <div id="dot-chat_message_sent" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0" title="Not set"></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <input class="wh-input" id="wh-chat_message_sent" placeholder="https://your-n8n.com/webhook/chat-msg" type="url" style="flex:1;font-size:12px;padding:7px 10px">
-                  <button class="wh-test-btn" onclick="saveEventWebhook('chat.message_sent')" style="font-size:11px;padding:7px 12px">Save</button>
-                  <button class="wh-test-btn" onclick="testEventWebhook('chat.message_sent')" style="font-size:11px;padding:7px 12px">&#9654; Test</button>
-                </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">contact.quick_send</div><div class="trigger-desc">Quick-send contact chip clicked</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('contact.quick_send')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
               </div>
-
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">send.transfer_type_changed</div><div class="trigger-desc">Transfer type changed (Instant / Standard / etc)</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('send.transfer_type_changed')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
+              </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">history.filter_changed</div><div class="trigger-desc">Filter chip clicked in Transactions tab</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('history.filter_changed')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
+              </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">notifications.viewed</div><div class="trigger-desc">Bell icon clicked</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('notifications.viewed')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
+              </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">chat.opened / chat.closed</div><div class="trigger-desc">Support chat popup opened or closed</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('chat.opened')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
+              </div>
+              <div class="trigger-item" style="padding:12px 16px">
+                <div class="trigger-info"><div class="trigger-name">chat.message_sent</div><div class="trigger-desc">Message sent in support chat (typed or quick reply)</div></div>
+                <button class="wh-test-btn" onclick="testEventWebhook('chat.message_sent')" style="font-size:11px;padding:6px 12px">&#9654; Test</button>
+              </div>
             </div>
           </div>
 
         </div>
 
-        <!-- RIGHT: info + log -->
+        <!-- RIGHT: instructions + log -->
         <div style="position:sticky;top:80px;align-self:start">
 
           <div class="wh-section">
-            <div class="wh-section-title">How it works</div>
-            <div style="font-size:12px;color:var(--muted2);line-height:1.8;background:var(--surface2);border-radius:10px;padding:14px 16px">
-              Each event fires to its <b style="color:var(--text)">own separate webhook URL</b>.<br>
-              Leave blank to silently skip that event.<br>
-              Green dot &#9679; = URL saved &amp; active.<br>
-              Click <b style="color:var(--text)">&#9654; Test</b> to send a live test payload.
+            <div class="wh-section-title">&#128196; How to set URLs</div>
+            <div style="font-size:12px;color:var(--muted2);line-height:1.9;background:var(--surface2);border-radius:10px;padding:16px">
+              Open <code style="background:var(--surface3);padding:1px 5px;border-radius:4px">index.html</code> in any text editor and find:<br><br>
+              <code style="background:var(--surface3);padding:4px 8px;border-radius:6px;display:block;margin-bottom:10px;font-size:11px;color:var(--accent)">const WEBHOOK_URLS = {</code>
+              Paste your n8n URL between the quotes for each event:<br><br>
+              <code style="background:var(--surface3);padding:4px 8px;border-radius:6px;display:block;font-size:10px;line-height:1.8">'user.signup': 'https://...',<br>'user.login':  'https://...',<br>'payment.sent': 'https://...',</code><br>
+              Leave as <code style="background:var(--surface3);padding:1px 5px;border-radius:4px">''</code> to silently skip that event.<br><br>
+              Use <b style="color:var(--text)">&#9654; Test</b> buttons to fire a test payload to whichever URLs are currently set.
             </div>
           </div>
 
           <div class="wh-section">
-            <div class="wh-section-title">Sample Payloads</div>
-            <div class="payload-preview" id="wh-payload" style="font-size:11px;max-height:220px;overflow-y:auto">{
-  "event": "user.signup",
-  "timestamp": "2026-03-13T10:22:01Z",
-  "sender": { "name": "Ibrahim Ali", "email": "ibrahim@email.com" },
-  "phone": "+92 300 1234567",
-  "status": "new_account"
-}
-
-{
+            <div class="wh-section-title">Sample Payload</div>
+            <div class="payload-preview" id="wh-payload" style="font-size:11px;max-height:200px;overflow-y:auto">{
   "event": "payment.sent",
   "timestamp": "2026-03-13T10:45:12Z",
-  "sender": { "name": "Ibrahim Ali", "email": "ibrahim@email.com" },
+  "sender": {
+    "name": "Ibrahim Ali",
+    "email": "ibrahim@email.com"
+  },
   "recipient": "Sarah Johnson",
   "amount": 250.00,
   "currency": "USD",
@@ -1900,13 +1765,6 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
   "note": "Dinner split",
   "reference": "TXN4F2A9B1C",
   "status": "completed"
-}
-
-{
-  "event": "pin.locked_out",
-  "timestamp": "2026-03-13T11:00:00Z",
-  "sender": { "name": "Ibrahim Ali", "email": "ibrahim@email.com" },
-  "note": "3 failed PIN attempts"
 }</div>
           </div>
 
@@ -1916,7 +1774,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
               <button class="wh-test-btn" onclick="clearLog()" style="font-size:10px;padding:4px 10px">Clear</button>
             </div>
             <div class="wh-log" id="wh-log" style="max-height:240px">
-              <div class="log-line"><span class="log-time">--:--:--</span><span class="log-msg info">Set a URL then use the app to see events here</span></div>
+              <div class="log-line"><span class="log-time">--:--:--</span><span class="log-msg info">Use the app or click Test to see events here</span></div>
             </div>
           </div>
 
@@ -1942,7 +1800,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
 <!-- TOASTS -->
 <div class="toast-stack" id="toast-stack"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ============ CHAT ============
 const AGENT_REPLIES = {
   'payment issue':      "I can help with that! Can you share the transaction reference number? You'll find it in your transaction history.",
@@ -2391,30 +2249,52 @@ function showToast(msg, type='info') {
 // ============ N8N WEBHOOKS — one URL per event ============
 // Set each URL in the Webhooks panel UI, or hard-code below.
 // Leave as '' to silently skip that event.
+// ============================================================
+// WEBHOOK URLS — paste your n8n URLs here, one per event
+// Leave as '' to silently skip that event
+// ============================================================
 const WEBHOOK_URLS = {
-  'user.signup':                     '',
-  'user.login':                      '',
-  'user.email_verified':             '',
-  'payment.sent':                    '',
-  'payment.proceed_step1':           '',
-  'payment.proceed_step2':           '',
-  'payment.cancelled_step2':         '',
-  'payment.cancelled_pin':           '',
-  'pin.wrong_attempt':               '',
-  'pin.locked_out':                  '',
-  'identity.verification_submitted': '',
-  'transaction.flagged':             '',
-  'transaction.viewed':              '',
-  'add_money.clicked':               '',
-  'request_money.clicked':           '',
-  'history.filter_changed':          '',
-  'send.transfer_type_changed':      '',
-  'contact.quick_send':              '',
-  'notifications.viewed':            '',
-  'chat.opened':                     '',
-  'chat.closed':                     '',
-  'chat.message_sent':               '',
+
+  // --- AUTH ---
+  'user.signup':                     '',  // fired when Create Account is submitted
+  'user.login':                      '',  // fired on every successful sign-in
+  'user.email_verified':             '',  // fired when OTP 1234 is confirmed
+
+  // --- PAYMENT FLOW ---
+  'payment.proceed_step1':           '',  // fired when Next is clicked on amount/recipient step
+  'payment.proceed_step2':           '',  // fired when Confirm & Continue is clicked
+  'payment.sent':                    '',  // fired when PIN is confirmed and money is sent
+  'payment.cancelled_step2':         '',  // fired when user goes Back from confirm screen
+  'payment.cancelled_pin':           '',  // fired when user goes Back from PIN screen
+
+  // --- SECURITY ---
+  'pin.wrong_attempt':               '',  // fired on each wrong PIN entry (includes attempt count)
+  'pin.locked_out':                  '',  // fired after 3 failed PIN attempts
+  'identity.verification_submitted': '',  // fired when identity form submitted after lockout
+
+  // --- TRANSACTIONS ---
+  'transaction.flagged':             '',  // fired when Flag button clicked on a transaction
+  'transaction.viewed':              '',  // fired when a transaction row is opened
+
+  // --- DASHBOARD ACTIONS ---
+  'add_money.clicked':               '',  // fired when Add Money button tapped
+  'request_money.clicked':           '',  // fired when Request button tapped
+  'contact.quick_send':              '',  // fired when a quick-send contact chip is clicked
+
+  // --- SEND MONEY ---
+  'send.transfer_type_changed':      '',  // fired when transfer type option changes (Instant / Standard / etc)
+
+  // --- MISC ---
+  'history.filter_changed':          '',  // fired when a filter chip is clicked in Transactions tab
+  'notifications.viewed':            '',  // fired when bell icon is clicked
+
+  // --- SUPPORT CHAT ---
+  'chat.opened':                     '',  // fired when chat popup is opened
+  'chat.closed':                     '',  // fired when chat popup is closed
+  'chat.message_sent':               '',  // fired when any message is sent in chat
+
 };
+// ============================================================
 
 // Activity log
 function addWebhookLog(event, status) {
