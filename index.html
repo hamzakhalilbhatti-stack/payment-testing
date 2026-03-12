@@ -1007,9 +1007,81 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
   font-size: 12px; color: var(--red); font-weight: 600; display: none;
 }
 
+
+/* ── OTP VERIFICATION SCREEN ── */
+#otp-screen {
+  position: fixed; inset: 0; z-index: 10000;
+  background: var(--bg);
+  display: none; align-items: center; justify-content: center;
+}
+.otp-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 24px; padding: 48px 44px; width: 440px;
+  text-align: center; box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+  animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.otp-icon { font-size: 52px; margin-bottom: 18px; }
+.otp-title { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+.otp-sub { font-size: 13px; color: var(--muted2); line-height: 1.6; margin-bottom: 10px; }
+.otp-email-badge {
+  display: inline-block; background: rgba(99,91,255,0.1);
+  border: 1px solid rgba(99,91,255,0.2); border-radius: 20px;
+  padding: 4px 14px; font-size: 13px; font-weight: 700;
+  color: var(--accent); margin-bottom: 28px;
+}
+.otp-boxes { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
+.otp-box {
+  width: 62px; height: 68px; background: var(--surface2);
+  border: 2px solid var(--border); border-radius: 14px;
+  font-size: 28px; font-weight: 800; color: var(--text);
+  text-align: center; outline: none; font-family: 'Inter', sans-serif;
+  transition: border-color 0.15s, box-shadow 0.15s; caret-color: var(--accent);
+}
+.otp-box:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,91,255,0.15); }
+.otp-box.filled { border-color: var(--accent); background: rgba(99,91,255,0.06); }
+.otp-box.error  { border-color: var(--red); background: rgba(239,68,68,0.05); animation: shake 0.4s ease; }
+.otp-err { font-size: 12px; color: var(--red); font-weight: 600; min-height: 18px; margin-bottom: 14px; }
+.otp-submit {
+  width: 100%; padding: 14px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  color: #fff; font-family: 'Inter', sans-serif; font-size: 15px;
+  font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 16px;
+}
+.otp-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+.otp-resend { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.otp-resend a { color: var(--accent); font-weight: 600; cursor: pointer; }
+.otp-back {
+  background: none; border: none; color: var(--muted); font-size: 12px;
+  font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+  display: block; width: 100%; text-align: center; margin-top: 6px;
+  transition: color 0.15s;
+}
+.otp-back:hover { color: var(--text); }
+
 </style>
 </head>
 <body>
+
+
+<!-- OTP VERIFICATION SCREEN -->
+<div id="otp-screen">
+  <div class="otp-card">
+    <div class="otp-icon">&#128235;</div>
+    <div class="otp-title">Check your email</div>
+    <div class="otp-sub">We sent a 4-digit verification code to</div>
+    <div class="otp-email-badge" id="otp-email-display">you@email.com</div>
+    <div class="otp-boxes">
+      <input class="otp-box" id="otp0" maxlength="1" type="tel" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)">
+      <input class="otp-box" id="otp1" maxlength="1" type="tel" oninput="otpInput(this,1)" onkeydown="otpKey(event,1)">
+      <input class="otp-box" id="otp2" maxlength="1" type="tel" oninput="otpInput(this,2)" onkeydown="otpKey(event,2)">
+      <input class="otp-box" id="otp3" maxlength="1" type="tel" oninput="otpInput(this,3)" onkeydown="otpKey(event,3)">
+    </div>
+    <div class="otp-err" id="otp-err"></div>
+    <button class="otp-submit" onclick="verifyOtp()">Verify &amp; Sign In &#8594;</button>
+    <div class="otp-resend">Didn&#39;t receive it? <a onclick="resendOtp()">Resend code</a></div>
+    <button class="otp-back" onclick="backToSignup()">&#8592; Back to sign up</button>
+  </div>
+</div>
 
 <!-- AUTH SCREEN -->
 <div id="auth-screen">
@@ -2245,9 +2317,8 @@ function doSignup() {
     status: 'new_account'
   });
 
-  // Auto login
-  loginUser(userDB[email]);
-  showToast('Account created! Welcome to PayFlow 🎉', 'success');
+  // Show OTP verification screen
+  showOtpScreen(userDB[email]);
 }
 
 function doLogin() {
@@ -2304,6 +2375,92 @@ function loginUser(user) {
   showToast('Welcome back, ' + currentUser.name.split(' ')[0] + '! 👋', 'success');
 }
 
+
+
+// ══════════════════════════════════
+// OTP VERIFICATION
+// ══════════════════════════════════
+const DEMO_OTP = '1234';
+let pendingUser = null;
+
+function otpInput(el, idx) {
+  el.value = el.value.replace(/[^0-9]/g, '');
+  if (el.value) {
+    el.classList.add('filled');
+    el.classList.remove('error');
+    document.getElementById('otp-err').textContent = '';
+    if (idx < 3) document.getElementById('otp' + (idx + 1)).focus();
+    const val = [0,1,2,3].map(i => document.getElementById('otp'+i).value).join('');
+    if (val.length === 4) setTimeout(verifyOtp, 200);
+  } else {
+    el.classList.remove('filled');
+  }
+}
+
+function otpKey(e, idx) {
+  if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+    document.getElementById('otp' + (idx - 1)).focus();
+  }
+}
+
+function showOtpScreen(user) {
+  pendingUser = user;
+  document.getElementById('otp-email-display').textContent = user.email;
+  [0,1,2,3].forEach(i => {
+    const b = document.getElementById('otp' + i);
+    b.value = ''; b.classList.remove('filled', 'error');
+  });
+  document.getElementById('otp-err').textContent = '';
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('otp-screen').style.display  = 'flex';
+  setTimeout(() => document.getElementById('otp0').focus(), 300);
+  showToast('Verification code sent to ' + user.email, 'info');
+}
+
+function verifyOtp() {
+  const entered = [0,1,2,3].map(i => document.getElementById('otp'+i).value).join('');
+  if (entered.length < 4) {
+    document.getElementById('otp-err').textContent = 'Please enter all 4 digits.';
+    return;
+  }
+  if (entered !== DEMO_OTP) {
+    [0,1,2,3].forEach(i => document.getElementById('otp'+i).classList.add('error'));
+    document.getElementById('otp-err').textContent = 'Incorrect code. Hint: 1234';
+    setTimeout(() => {
+      [0,1,2,3].forEach(i => {
+        document.getElementById('otp'+i).value = '';
+        document.getElementById('otp'+i).classList.remove('filled', 'error');
+      });
+      document.getElementById('otp0').focus();
+    }, 900);
+    return;
+  }
+  document.getElementById('otp-screen').style.display = 'none';
+  fireN8n({
+    event: 'user.email_verified',
+    timestamp: new Date().toISOString(),
+    sender: { name: pendingUser.name, email: pendingUser.email },
+    phone: pendingUser.phone || '',
+    status: 'verified'
+  });
+  loginUser(pendingUser);
+}
+
+function resendOtp() {
+  [0,1,2,3].forEach(i => {
+    document.getElementById('otp'+i).value = '';
+    document.getElementById('otp'+i).classList.remove('filled', 'error');
+  });
+  document.getElementById('otp-err').textContent = '';
+  document.getElementById('otp0').focus();
+  showToast('Code resent to ' + (pendingUser ? pendingUser.email : 'your email'), 'info');
+}
+
+function backToSignup() {
+  document.getElementById('otp-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+  switchAuthTab('signup', document.querySelectorAll('.auth-tab')[1]);
+}
 
 </script>
 </body>
