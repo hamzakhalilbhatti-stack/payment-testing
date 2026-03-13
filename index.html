@@ -1864,7 +1864,7 @@ async function checkUserInSupabase(email, pass) {
 
 // ============ CHAT ============
 const AGENT_REPLIES = {
-  'payment issue':      "",
+  'payment issue':      "I can help with that! Can you share the transaction reference number? You'll find it in your transaction history.",
   'account frozen':     "I'm sorry to hear that. Account freezes are usually temporary. Let me look into this — can you confirm your registered email?",
   'transaction failed': "Transaction failures can happen due to insufficient funds or card limits. Which transaction is giving you trouble?",
   'talk to an agent':   "Connecting you to a live agent now... Average wait time is under 2 minutes. 🎧",
@@ -1872,6 +1872,7 @@ const AGENT_REPLIES = {
 };
 
 function openChat() {
+  window._chatSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
   fireN8n({event:'chat.opened',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},page:'support_chat'});
   const popup = document.getElementById('chat-popup');
   if (popup) popup.classList.add('open');
@@ -1887,37 +1888,167 @@ function closeChat() {
   if (popup) popup.classList.remove('open');
 }
 
-function sendQuick(text) {
-  fireN8n({event:'chat.message_sent',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},message:text,type:'quick_reply'});
+async function sendQuick(text) {
   document.getElementById('quick-replies').style.display = 'none';
   appendUserMsg(text);
+
+  if (!window._chatSessionId) window._chatSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+  const sessionId = window._chatSessionId;
+
+  if (SUPABASE_URL.includes('YOUR_PROJECT')) {
+    showTyping();
+    setTimeout(() => {
+      removeTyping();
+      const key = text.toLowerCase();
+      appendAgentMsg(AGENT_REPLIES[key] || AGENT_REPLIES['default']);
+    }, 1200);
+    return;
+  }
+
+  // Save user message to Supabase
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/chat_messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({ session_id: sessionId, role: 'user', message: text })
+    });
+  } catch(e) {}
+
+  // Fire webhook
+  if (CHAT_WEBHOOK_URL) {
+    fetch(CHAT_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        event: 'chat.message_sent',
+        timestamp: new Date().toISOString(),
+        session_id: sessionId,
+        sender: { name: currentUser.name, email: currentUser.email },
+        message: text,
+        type: 'quick_reply'
+      })
+    }).catch(() => {});
+  }
+
+  // Poll for reply
   showTyping();
-  setTimeout(() => {
-    removeTyping();
-    const key = text.toLowerCase();
-    const reply = AGENT_REPLIES[key] || AGENT_REPLIES['default'];
-    appendAgentMsg(reply);
-  }, 1200);
+  const pollStart = Date.now();
+  const pollInterval = setInterval(async () => {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/chat_messages?session_id=eq.${sessionId}&role=eq.agent&order=created_at.desc&limit=1`,
+        { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+      );
+      const rows = await res.json();
+      if (rows && rows.length > 0 && new Date(rows[0].created_at) > new Date(pollStart - 1000)) {
+        clearInterval(pollInterval);
+        removeTyping();
+        appendAgentMsg(rows[0].message);
+        return;
+      }
+    } catch(e) {}
+    if (Date.now() - pollStart > 30000) {
+      clearInterval(pollInterval);
+      removeTyping();
+      appendAgentMsg("Sorry, the agent is taking longer than usual. Please try again.");
+    }
+  }, 2000);
 }
 
-function sendChat() {
+async function sendChat() {
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   if (!text) return;
   input.value = '';
-  fireN8n({event:'chat.message_sent',timestamp:new Date().toISOString(),sender:{name:currentUser.name,email:currentUser.email},message:text,type:'typed'});
   document.getElementById('quick-replies').style.display = 'none';
   appendUserMsg(text);
+
+  // Generate a session id per chat open (stored on window)
+  if (!window._chatSessionId) window._chatSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+  const sessionId = window._chatSessionId;
+
+  // If Supabase not configured, fall back to local replies
+  if (SUPABASE_URL.includes('YOUR_PROJECT')) {
+    showTyping();
+    setTimeout(() => {
+      removeTyping();
+      const lower = text.toLowerCase();
+      let reply = AGENT_REPLIES['default'];
+      for (const key of Object.keys(AGENT_REPLIES)) {
+        if (lower.includes(key)) { reply = AGENT_REPLIES[key]; break; }
+      }
+      appendAgentMsg(reply);
+    }, 1400);
+    return;
+  }
+
+  // 1. Save user message to Supabase
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/chat_messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({
+        session_id: sessionId,
+        role: 'user',
+        message: text
+      })
+    });
+  } catch(e) { console.warn('Failed to save message', e); }
+
+  // 2. Also fire webhook to n8n so it picks up the message
+  if (CHAT_WEBHOOK_URL) {
+    fetch(CHAT_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        event: 'chat.message_sent',
+        timestamp: new Date().toISOString(),
+        session_id: sessionId,
+        sender: { name: currentUser.name, email: currentUser.email },
+        message: text,
+        type: 'typed'
+      })
+    }).catch(() => {});
+  }
+
+  // 3. Poll Supabase for agent reply (every 2s, max 30s)
   showTyping();
-  setTimeout(() => {
-    removeTyping();
-    const lower = text.toLowerCase();
-    let reply = AGENT_REPLIES['default'];
-    for (const key of Object.keys(AGENT_REPLIES)) {
-      if (lower.includes(key)) { reply = AGENT_REPLIES[key]; break; }
+  const pollStart = Date.now();
+  const pollInterval = setInterval(async () => {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/chat_messages?session_id=eq.${sessionId}&role=eq.agent&order=created_at.desc&limit=1`,
+        { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+      );
+      const rows = await res.json();
+      if (rows && rows.length > 0) {
+        const latest = rows[0];
+        // Only show if it arrived after we sent our message
+        if (new Date(latest.created_at) > new Date(pollStart - 1000)) {
+          clearInterval(pollInterval);
+          removeTyping();
+          appendAgentMsg(latest.message);
+          return;
+        }
+      }
+    } catch(e) {}
+    // Timeout after 30s
+    if (Date.now() - pollStart > 30000) {
+      clearInterval(pollInterval);
+      removeTyping();
+      appendAgentMsg("Sorry, the agent is taking longer than usual. Please try again.");
     }
-    appendAgentMsg(reply);
-  }, 1400);
+  }, 2000);
 }
 
 function appendUserMsg(text) {
@@ -2329,6 +2460,9 @@ function showToast(msg, type='info') {
 // WEBHOOK URLS — paste your n8n URLs here, one per event
 // Leave as '' to silently skip that event
 // ============================================================
+// Set this to your n8n chat webhook URL (must return JSON: {"reply": "your message"})
+const CHAT_WEBHOOK_URL = '';  // ← PASTE YOUR N8N CHAT WEBHOOK URL HERE
+
 const WEBHOOK_URLS = {
 
   // --- AUTH ---
