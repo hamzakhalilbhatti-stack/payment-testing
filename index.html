@@ -1952,12 +1952,12 @@ async function sendQuick(text) {
         return;
       }
     } catch(e) {}
-    if (Date.now() - pollStart > 30000) {
+    if (Date.now() - pollStart > 60000) {
       clearInterval(pollInterval);
       removeTyping();
       appendAgentMsg("Sorry, the agent is taking longer than usual. Please try again.");
     }
-  }, 2000);
+  }, 1500);
 }
 
 async function sendChat() {
@@ -2043,12 +2043,12 @@ async function sendChat() {
       }
     } catch(e) {}
     // Timeout after 30s
-    if (Date.now() - pollStart > 30000) {
+    if (Date.now() - pollStart > 60000) {
       clearInterval(pollInterval);
       removeTyping();
       appendAgentMsg("Sorry, the agent is taking longer than usual. Please try again.");
     }
-  }, 2000);
+  }, 1500);
 }
 
 function appendUserMsg(text) {
